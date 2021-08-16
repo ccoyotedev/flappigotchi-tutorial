@@ -172,15 +172,19 @@ export class BootScene extends Phaser.Scene {
   ) => {
     const svg = gotchiObject.svg;
     const spriteMatrix = [
+      // Flapping animation
       [
-        customiseSvg(svg, { removeBg: true }),
         customiseSvg(svg, {
           armsUp: true,
-          eyes: "happy",
-          float: true,
           removeBg: true,
+          removeShadow: true
         }),
+        customiseSvg(svg, { removeBg: true, removeShadow: true }),
       ],
+      // Dead frame
+      [
+        customiseSvg(svg, { removeBg: true, removeShadow: true, eyes: 'sleeping', mouth: 'neutral' }),
+      ]
     ];
 
     const { src, dimensions } = await constructSpritesheet(spriteMatrix);

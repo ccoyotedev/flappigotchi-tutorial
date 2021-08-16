@@ -1,3 +1,5 @@
+import { getGameHeight } from 'game/helpers';
+
 interface Props {
   scene: Phaser.Scene;
   x: number;
@@ -7,65 +9,66 @@ interface Props {
 }
 
 export class Player extends Phaser.GameObjects.Sprite {
-  private cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
-  public speed = 200;
+  private jumpKey: Phaser.Input.Keyboard.Key;
+  private pointer: Phaser.Input.Pointer;
+  private isFlapping = false;
+  private isDead = false;
 
   constructor({ scene, x, y, key }: Props) {
     super(scene, x, y, key);
 
-    // sprite
-    this.setOrigin(0, 0);
-
-    // Add animations
+    // Animations
     this.anims.create({
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers(key || '', { start: 0, end: 1 }),
+      key: 'flap',
+      frames: this.anims.generateFrameNumbers(key || '', { frames: [ 1, 0 ]}),
       frameRate: 2,
-      repeat: -1,
+    });
+    this.anims.create({
+      key: 'dead',
+      frames: this.anims.generateFrameNumbers(key || '', { frames: [ 2 ]}),
     });
 
     // physics
     this.scene.physics.world.enable(this);
+    (this.body as Phaser.Physics.Arcade.Body).setGravityY(getGameHeight(this.scene) * 1.5);
+    (this.body as Phaser.Physics.Arcade.Body).setSize(90, 120);
+
+    // sprite
+    this.setOrigin(0, 0);
+    this.setDisplaySize(this.displayHeight * getGameHeight(scene) / 1200, this.displayHeight * getGameHeight(scene) / 1200);
 
     // input
-    this.cursorKeys = scene.input.keyboard.createCursorKeys();
+    this.jumpKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.pointer = this.scene.input.activePointer;
 
     this.scene.add.existing(this);
   }
 
+  public getDead(): boolean {
+    return this.isDead;
+  }
+
+  public setDead(dead: boolean): void {
+    this.isDead = dead;
+    this.anims.play('dead');
+  }
+
   update(): void {
-    // Every frame, we create a new velocity for the sprite based on what keys the player is holding down.
-    const velocity = new Phaser.Math.Vector2(0, 0);
-    // Horizontal movement
-    switch (true) {
-      case this.cursorKeys?.left.isDown:
-        velocity.x -= 1;
-        this.anims.play('idle', false);
-        break;
-      case this.cursorKeys?.right.isDown:
-        velocity.x += 1;
-        this.anims.play('idle', false);
-        break;
-      default:
-        this.anims.play('idle', true);
+    // handle input
+    if ((this.jumpKey.isDown || this.pointer.isDown) && !this.isFlapping) {
+      // flap
+      this.isFlapping = true;
+      this.anims.play('flap');
+
+      (this.body as Phaser.Physics.Arcade.Body).setVelocityY(-getGameHeight(this.scene) * 0.6);
+
+    } else if (this.jumpKey.isUp && !this.pointer.isDown && this.isFlapping) {
+      this.isFlapping = false;
     }
 
-    // Vertical movement
-    switch (true) {
-      case this.cursorKeys?.down.isDown:
-        velocity.y += 1;
-        this.anims.play('idle', false);
-        break;
-      case this.cursorKeys?.up.isDown:
-        velocity.y -= 1;
-        this.anims.play('idle', false);
-        break;
-      default:
-        this.anims.play('idle', true);
+    // check if off the screen
+    if (this.y > getGameHeight(this.scene) || this.y < 0) {
+      this.setDead(true);
     }
-
-    // We normalize the velocity so that the player is always moving at the same speed, regardless of direction.
-    const normalizedVelocity = velocity.normalize();
-    (this.body as Phaser.Physics.Arcade.Body).setVelocity(normalizedVelocity.x * this.speed, normalizedVelocity.y * this.speed);
   }
 }
