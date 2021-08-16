@@ -2,7 +2,8 @@
 
 > This codebase builds off of the [official Aavegotchi minigame template](https://github.com/aavegotchi/aavegotchi-minigame-template). 
 
-![Flappigotchi screenshot]("https://user-images.githubusercontent.com/44173285/129598179-d6cd66d6-a40b-444f-af91-602f839499b5.png")
+![Flappigotchi screenshot](https://user-images.githubusercontent.com/44173285/129598593-a08055e7-a414-448f-9f7a-8febe32c9221.png)
+
 > Deployed version at [flappigotchi.com](https://flappigotchi.com/). (Bare in mind the deployed game isnt using the most up to date code)
 
 The repo includes both the *app* and *server* directories. The *app* consists of [Phaser3](https://phaser.io/phaser3) with a [React](https://reactjs.org/) wrapper. Phaser is a 2D game framework used for making HTML5 games for desktop and mobile. React is used for an intuitive main menu UI, as well as giving access to custom hooks for a more smooth Web3 / Aavegotchi integration.
