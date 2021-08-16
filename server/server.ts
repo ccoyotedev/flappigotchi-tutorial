@@ -28,7 +28,7 @@ interface ScoreSubmission {
 }
 
 const submitScore = async ({tokenId, score, name}: ScoreSubmission) => {
-  const collection = db.collection('test');
+  const collection = db.collection(process.env.DB_COLLECTION);
   const ref = collection.doc(tokenId);
   const doc = await ref.get().catch(err => {return {status: 400, error: err}});
 
