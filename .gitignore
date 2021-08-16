@@ -30,7 +30,7 @@ yarn-error.log*
 yarn.lock
 
 package-lock.json
-flappigotchi-service-account.json
+service-account.json
 
 # Logs
 */logs
