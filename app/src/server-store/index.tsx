@@ -54,7 +54,7 @@ import React, {
     gotchis: Array<AavegotchiObject>
   ) => {
     return database
-      .collection("test")
+      .collection(process.env.REACT_APP_COLLECTION_NAME || "test")
       .withConverter(converter)
       .where(
         "tokenId",
@@ -101,7 +101,7 @@ import React, {
     const getHighscores = async (_firebase: fb.app.App) => {
       const db = _firebase.firestore();
       const highscoreRef = db
-        .collection("test")
+        .collection(process.env.REACT_APP_COLLECTION_NAME || "test")
         .withConverter(converter);
       const snapshot = await highscoreRef.get();
 
